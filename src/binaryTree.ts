@@ -1,3 +1,5 @@
+//insert에 들어오는 값의구조랑 remove했을때 원소값의 출력을 보면 이진검색트리?
+
 export class BinaryTree<T>{
     private arr: (T | null)[];
 
@@ -134,40 +136,11 @@ export class BinaryTree<T>{
   }
   
   levelOrderTraversal(): T[] {
-    const result: T[] = [];
-    const queue: number[] = [];
-
-    if (this.arr[0] == null) {
-      return result;
+    if (!this.arr) {
+      return [];
     }
 
-    queue.push(0);
-
-    while (queue.length > 0) {
-      const currentIndex = queue.shift()!;
-
-      if (currentIndex < this.arr.length && this.arr[currentIndex] != null) {
-        result.push(this.arr[currentIndex]!);
-
-        const leftChildIndex = 2 * currentIndex + 1;
-        const rightChildIndex = 2 * currentIndex + 2;
-
-        if (leftChildIndex < this.arr.length && this.arr[leftChildIndex] != null) {
-          queue.push(leftChildIndex);
-        }
-        if (rightChildIndex < this.arr.length && this.arr[rightChildIndex] != null) {
-          queue.push(rightChildIndex);
-        }
-      }
-    }
-    return result;
-  }
-
-  remove(value: T): void {
-    const indexToRemove = this.findNodeIndex(value);
-    if (indexToRemove !== -1) {
-      this.removeByIndex(indexToRemove);
-    }
+    return this.arr.filter(value => value != null) as T[];
   }
 
   private findNodeIndex(value: T): number {
@@ -185,28 +158,6 @@ export class BinaryTree<T>{
     return -1;
   }
 
-  private removeByIndex(index: number): void {
-    const leftChildIndex = 2 * index + 1;
-    const rightChildIndex = 2 * index + 2;
-    const hasLeftChild =
-      leftChildIndex < this.arr.length && this.arr[leftChildIndex] != null;
-    const hasRightChild =
-      rightChildIndex < this.arr.length && this.arr[rightChildIndex] != null;
-
-    if (!hasLeftChild && !hasRightChild) {
-      this.arr[index] = null;
-    } else if (hasLeftChild && !hasRightChild) {
-      this.moveSubtree(leftChildIndex, index);
-    } else if (!hasLeftChild && hasRightChild) {
-      this.moveSubtree(rightChildIndex, index);
-    } else {
-      const successorIndex = this.findMinIndex(rightChildIndex);
-      const successorValue = this.arr[successorIndex]!;
-      this.arr[index] = successorValue;
-      this.removeByIndex(successorIndex);
-    }
-  }
-
   private findMinIndex(startIndex: number): number {
     let currentIndex = startIndex;
     let minIndex = startIndex;
@@ -220,7 +171,7 @@ export class BinaryTree<T>{
     }
     return minIndex;
   }
-
+  
   private moveSubtree(fromIndex: number, toIndex: number): void {
     if (fromIndex >= this.arr.length || this.arr[fromIndex] == null) {
       this.arr[toIndex] = null;
@@ -240,6 +191,33 @@ export class BinaryTree<T>{
     const toRight = 2 * toIndex + 2;
     if (fromRight < this.arr.length) {
       this.moveSubtree(fromRight, toRight);
+    }
+  }
+
+  private removeByIndex(index: number): void {
+    const leftChildIndex = 2 * index + 1;
+    const rightChildIndex = 2 * index + 2;
+    const hasLeftChild = leftChildIndex < this.arr.length && this.arr[leftChildIndex] != null;
+    const hasRightChild = rightChildIndex < this.arr.length && this.arr[rightChildIndex] != null;
+
+    if (!hasLeftChild && !hasRightChild) {
+      this.arr[index] = null;
+    } else if (hasLeftChild && !hasRightChild) {
+      this.moveSubtree(leftChildIndex, index);
+    } else if (!hasLeftChild && hasRightChild) {
+      this.moveSubtree(rightChildIndex, index);
+    } else {
+      const successorIndex = this.findMinIndex(rightChildIndex);
+      const successorValue = this.arr[successorIndex]!;
+      this.arr[index] = successorValue;
+      this.removeByIndex(successorIndex);
+    }
+  }
+
+  remove(value: T): void {
+    const indexToRemove = this.findNodeIndex(value);
+    if (indexToRemove !== -1) {
+      this.removeByIndex(indexToRemove);
     }
   }
 }
