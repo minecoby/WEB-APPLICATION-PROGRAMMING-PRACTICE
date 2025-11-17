@@ -1,4 +1,4 @@
-//insert에 들어오는 값의구조랑 remove했을때 원소값의 출력을 보면 이진검색트리?
+//insert에 들어오는 값의순서나 remove했을때 원소값의 출력을 보면 이진검색트리? 구현
 
 export class BinaryTree<T>{
     private arr: (T | null)[];
@@ -7,7 +7,7 @@ export class BinaryTree<T>{
     this.arr = [];
   }
 
-
+  // 트리에 새 값 삽입
   insert(value: T): void {
     let currentIndex = 0;
 
@@ -30,6 +30,7 @@ export class BinaryTree<T>{
     }
   }
 
+  // 트리에서 특정 값을 검색하여 반환 (없으면 null)
   search(value: T): T | null {
     let currentIndex = 0;
 
@@ -47,6 +48,7 @@ export class BinaryTree<T>{
     return null;
   }
 
+  // 트리 중위 순회 
   inOrderTraversal(): T[] {
     const result: T[] = [];
     const stack: number[] = [];
@@ -69,6 +71,7 @@ export class BinaryTree<T>{
     return result;
   }
   
+  // 트리 전위 순회
   preOrderTraversal(): T[] {
     const result: T[] = [];
     const stack: number[] = [];
@@ -102,6 +105,7 @@ export class BinaryTree<T>{
     return result;
   }
 
+  // 트리 후위 순회
   postOrderTraversal(): T[] {
     const tempResult: T[] = [];
     const stack: number[] = [];
@@ -134,7 +138,7 @@ export class BinaryTree<T>{
 
     return tempResult.reverse();
   }
-  
+  // 트리 레벨 순서로 순회
   levelOrderTraversal(): T[] {
     if (!this.arr) {
       return [];
@@ -143,6 +147,7 @@ export class BinaryTree<T>{
     return this.arr.filter(value => value != null) as T[];
   }
 
+  //특정 값의 배열 위치 찾기 (없으면 -1)
   private findNodeIndex(value: T): number {
     let currentIndex = 0;
     while (currentIndex < this.arr.length && this.arr[currentIndex] != null) {
@@ -157,7 +162,7 @@ export class BinaryTree<T>{
     }
     return -1;
   }
-
+  //주어진 인덱스의 서브트리에서 최소값 노드의 인덱스 찾기
   private findMinIndex(startIndex: number): number {
     let currentIndex = startIndex;
     let minIndex = startIndex;
@@ -172,6 +177,7 @@ export class BinaryTree<T>{
     return minIndex;
   }
   
+  //from인덱스의 서브트리를 to인덱스로 이동
   private moveSubtree(fromIndex: number, toIndex: number): void {
     if (fromIndex >= this.arr.length || this.arr[fromIndex] == null) {
       this.arr[toIndex] = null;
@@ -193,7 +199,7 @@ export class BinaryTree<T>{
       this.moveSubtree(fromRight, toRight);
     }
   }
-
+  //특정 인덱스의 노드를 이진 검색 트리 규칙에 맞게 삭제
   private removeByIndex(index: number): void {
     const leftChildIndex = 2 * index + 1;
     const rightChildIndex = 2 * index + 2;
@@ -207,13 +213,14 @@ export class BinaryTree<T>{
     } else if (!hasLeftChild && hasRightChild) {
       this.moveSubtree(rightChildIndex, index);
     } else {
+      // 오른쪽 서브트리에서 가장 작은 값
       const successorIndex = this.findMinIndex(rightChildIndex);
       const successorValue = this.arr[successorIndex]!;
       this.arr[index] = successorValue;
       this.removeByIndex(successorIndex);
     }
   }
-
+  // 트리에서 특정 값을 찾아 삭제
   remove(value: T): void {
     const indexToRemove = this.findNodeIndex(value);
     if (indexToRemove !== -1) {
